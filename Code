@@ -1,0 +1,35 @@
+import java.util.*;
+
+class Solution {
+    static final int MOD = 1_000_000_007;
+    Map<String, Integer> memo = new HashMap<>();
+
+    public int numberOfWays(int n, int x) {
+        return dfs(n, x, 1);
+    }
+
+    private int dfs(int remaining, int power, int current) {
+        if (remaining == 0) return 1; // found a valid combination
+        if (remaining < 0) return 0;  // overshoot → invalid
+
+        String key = remaining + "," + current;
+        if (memo.containsKey(key)) return memo.get(key);
+
+        long currPow = (long) Math.pow(current, power);
+        if (currPow > remaining) {
+            memo.put(key, 0);
+            return 0;
+        }
+
+        // Option 1: Take current number
+        int take = dfs(remaining - (int) currPow, power, current + 1) % MOD;
+
+        // Option 2: Skip current number
+        int skip = dfs(remaining, power, current + 1) % MOD;
+
+        int ways = (int) ((take + skip) % MOD);
+        memo.put(key, ways);
+        return ways;
+    }
+}
+
